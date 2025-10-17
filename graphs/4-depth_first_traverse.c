@@ -1,7 +1,8 @@
 #include "graphs.h"
 
 /* Internal helper function declarations */
-static vertex_t *find_vertex_at_index(const graph_t *graph, size_t target_index);
+static vertex_t *find_vertex_at_index(const graph_t *graph,
+				      size_t target_index);
 static void perform_dfs_recursion(size_t vertex_id, size_t *visit_tracker,
 				  size_t current_level, size_t *max_level,
 				  const graph_t *graph,
@@ -16,7 +17,8 @@ static void perform_dfs_recursion(size_t vertex_id, size_t *visit_tracker,
  *              specified index value
  * Return: Pointer to matching vertex, NULL if not found or invalid input
  */
-static vertex_t *find_vertex_at_index(const graph_t *graph, size_t target_index)
+static vertex_t *find_vertex_at_index(const graph_t *graph,
+				      size_t target_index)
 {
 	vertex_t *current_node;
 
@@ -75,7 +77,7 @@ static void perform_dfs_recursion(size_t vertex_id, size_t *visit_tracker,
 		while (current_edge)
 		{
 			neighbor_vertex = current_edge->dest;
-			
+
 			/* Recursively visit unexplored neighbors */
 			if (visit_tracker[neighbor_vertex->index] == UNEXPLORED)
 			{

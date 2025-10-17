@@ -11,11 +11,13 @@ edge_t *add_single_edge(vertex_t *source_vertex, vertex_t *dest_vertex);
  * @type: the type of edge (UNIDIRECTIONAL or BIDIRECTIONAL)
  * Return: 1 on success, 0 on failure
  */
-int graph_add_edge(graph_t *graph, const char *src, const char *dest, edge_type_t type)
+int graph_add_edge(graph_t *graph, const char *src, const char *dest,
+		   edge_type_t type)
 {
 	vertex_t *current_vertex = NULL, *source_vertex = NULL, *dest_vertex = NULL;
 
-	if (!graph || !src || !dest || type < UNIDIRECTIONAL || type > BIDIRECTIONAL)
+	if (!graph || !src || !dest || type < UNIDIRECTIONAL ||
+	    type > BIDIRECTIONAL)
 		return (0);
 
 	for (current_vertex = graph->vertices; current_vertex; current_vertex = current_vertex->next)

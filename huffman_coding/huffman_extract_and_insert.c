@@ -3,7 +3,8 @@
 /* Internal helper function prototypes */
 static binary_tree_node_t *create_parent_node(binary_tree_node_t *left_child,
 					       binary_tree_node_t *right_child);
-static symbol_t *merge_symbol_frequencies(symbol_t *first_symbol, symbol_t *second_symbol);
+static symbol_t *merge_symbol_frequencies(symbol_t *first_symbol,
+					  symbol_t *second_symbol);
 
 /**
  * huffman_extract_and_insert - Combines two minimum frequency nodes into parent
@@ -106,7 +107,8 @@ static binary_tree_node_t *create_parent_node(binary_tree_node_t *left_child,
  *              the sum of both input symbols, using sentinel character
  * Return: Pointer to new merged symbol, NULL on failure
  */
-static symbol_t *merge_symbol_frequencies(symbol_t *first_symbol, symbol_t *second_symbol)
+static symbol_t *merge_symbol_frequencies(symbol_t *first_symbol,
+					  symbol_t *second_symbol)
 {
 	symbol_t *merged_symbol;
 	size_t total_frequency;

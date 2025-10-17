@@ -83,7 +83,8 @@ size_t find_tree_depth(binary_tree_node_t *root, size_t depth)
  * @depth: the current depth of the node
  * Return: nothing (void)
  */
-void generate_codes_recursive(binary_tree_node_t *root, char *code, size_t depth)
+void generate_codes_recursive(binary_tree_node_t *root, char *code,
+			      size_t depth)
 {
 	symbol_t *symbol = (symbol_t *)root->data;
 

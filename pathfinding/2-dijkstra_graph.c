@@ -1,16 +1,22 @@
 #include "pathfinding.h"
 
 /* Internal helper function declarations */
-static vertex_t *find_minimum_distance_vertex(graph_t *graph, size_t *distances,
-					      size_t *processed, size_t *vertex_idx);
+static vertex_t *find_minimum_distance_vertex(graph_t *graph,
+					      size_t *distances,
+					      size_t *processed,
+					      size_t *vertex_idx);
 static void reconstruct_shortest_path(graph_t *graph, queue_t *result_queue,
 				      vertex_t **predecessor_map, vertex_t const *source,
 				      vertex_t const *destination);
-static void execute_dijkstra_iteration(graph_t *graph, size_t *distances, size_t *processed,
-				       vertex_t **predecessor_map, vertex_t const *source,
-				       vertex_t const *destination, size_t current_idx);
+static void execute_dijkstra_iteration(graph_t *graph, size_t *distances,
+				       size_t *processed,
+				       vertex_t **predecessor_map,
+				       vertex_t const *source,
+				       vertex_t const *destination,
+				       size_t current_idx);
 static int allocate_dijkstra_structures(graph_t *graph, size_t **distances,
-					size_t **processed, vertex_t ***predecessor_map);
+					size_t **processed,
+					vertex_t ***predecessor_map);
 
 /**
  * find_minimum_distance_vertex - Locates unprocessed vertex with smallest distance
@@ -23,8 +29,10 @@ static int allocate_dijkstra_structures(graph_t *graph, size_t **distances,
  *              distance that hasn't been processed yet
  * Return: Pointer to vertex with minimum distance, NULL if none found
  */
-static vertex_t *find_minimum_distance_vertex(graph_t *graph, size_t *distances,
-					      size_t *processed, size_t *vertex_idx)
+static vertex_t *find_minimum_distance_vertex(graph_t *graph,
+					      size_t *distances,
+					      size_t *processed,
+					      size_t *vertex_idx)
 {
 	size_t minimum_dist = ULONG_MAX;
 	size_t iterator;
@@ -71,7 +79,8 @@ static vertex_t *find_minimum_distance_vertex(graph_t *graph, size_t *distances,
  * Return: void
  */
 static void reconstruct_shortest_path(graph_t *graph, queue_t *result_queue,
-				      vertex_t **predecessor_map, vertex_t const *source,
+				      vertex_t **predecessor_map,
+				      vertex_t const *source,
 				      vertex_t const *destination)
 {
 	size_t current_idx = destination->index;
@@ -79,17 +88,16 @@ static void reconstruct_shortest_path(graph_t *graph, queue_t *result_queue,
 	if (!predecessor_map[current_idx])
 		return;
 
-	/* Add destination to path */
 	if (!queue_push_front(result_queue, strdup(destination->content)))
 	{
 		queue_delete(result_queue);
 		return;
 	}
 
-	/* Trace back through predecessors until reaching source */
 	while (predecessor_map[current_idx] && current_idx < graph->nb_vertices)
 	{
-		if (!queue_push_front(result_queue, strdup(predecessor_map[current_idx]->content)))
+		if (!queue_push_front(result_queue,
+				      strdup(predecessor_map[current_idx]->content)))
 		{
 			queue_delete(result_queue);
 			return;
@@ -115,20 +123,25 @@ static void reconstruct_shortest_path(graph_t *graph, queue_t *result_queue,
  *              and recursively continues until destination is reached
  * Return: void
  */
-static void execute_dijkstra_iteration(graph_t *graph, size_t *distances, size_t *processed,
-				       vertex_t **predecessor_map, vertex_t const *source,
-				       vertex_t const *destination, size_t current_idx)
+static void execute_dijkstra_iteration(graph_t *graph, size_t *distances,
+				       size_t *processed,
+				       vertex_t **predecessor_map,
+				       vertex_t const *source,
+				       vertex_t const *destination,
+				       size_t current_idx)
 {
 	vertex_t *active_vertex;
 	edge_t *current_edge;
 	size_t vertex_index, tentative_distance;
 
-	active_vertex = find_minimum_distance_vertex(graph, distances, processed, &current_idx);
+	active_vertex = find_minimum_distance_vertex(graph, distances,
+						     processed, &current_idx);
 	if (!active_vertex)
 		return;
 
 	printf("Checking %s, distance from %s is %ld\n",
-	       active_vertex->content, source->content, distances[active_vertex->index]);
+	       active_vertex->content, source->content,
+	       distances[active_vertex->index]);
 
 	vertex_index = active_vertex->index;
 	current_edge = active_vertex->edges;
@@ -137,14 +150,13 @@ static void execute_dijkstra_iteration(graph_t *graph, size_t *distances, size_t
 	while (current_edge && processed[vertex_index] == 0)
 	{
 		tentative_distance = distances[vertex_index] + current_edge->weight;
-		
+
 		/* Update distance if shorter path found */
 		if (distances[current_edge->dest->index] > tentative_distance)
 		{
 			distances[current_edge->dest->index] = tentative_distance;
 			predecessor_map[current_edge->dest->index] = active_vertex;
 		}
-		
 		current_edge = current_edge->next;
 	}
 
@@ -171,7 +183,8 @@ static void execute_dijkstra_iteration(graph_t *graph, size_t *distances, size_t
  * Return: 0 on success, 1 on allocation failure
  */
 static int allocate_dijkstra_structures(graph_t *graph, size_t **distances,
-					size_t **processed, vertex_t ***predecessor_map)
+					size_t **processed,
+					vertex_t ***predecessor_map)
 {
 	size_t initialization_idx;
 
@@ -214,7 +227,8 @@ static int allocate_dijkstra_structures(graph_t *graph, size_t **distances,
  *              with minimum total weight from start to target vertex
  * Return: Queue containing vertices in shortest path, NULL if no path exists
  */
-queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start, vertex_t const *target)
+queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
+			vertex_t const *target)
 {
 	size_t *distance_array = NULL, *processed_array = NULL;
 	queue_t *path_queue = NULL;
@@ -225,7 +239,8 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start, vertex_t const *t
 		return (NULL);
 
 	/* Initialize algorithm data structures */
-	if (allocate_dijkstra_structures(graph, &distance_array, &processed_array,
+	if (allocate_dijkstra_structures(graph, &distance_array,
+					 &processed_array,
 					 &predecessor_array) != 0)
 		return (NULL);
 
@@ -247,7 +262,8 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start, vertex_t const *t
 				   predecessor_array, start, target, 0);
 
 	/* Reconstruct path from source to destination */
-	reconstruct_shortest_path(graph, path_queue, predecessor_array, start, target);
+	reconstruct_shortest_path(graph, path_queue, predecessor_array,
+				  start, target);
 
 	/* Cleanup allocated memory */
 	free(processed_array);

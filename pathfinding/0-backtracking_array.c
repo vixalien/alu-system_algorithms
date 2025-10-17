@@ -29,7 +29,7 @@ int is_position_valid(char **map, int **visited, int x, int y, int rows, int col
  * Return: 0 on success, -1 on failure
  */
 int setup_arrays(queue_t **path, int ***visited, point_t *direction,
-				 int rows, int cols)
+		 int rows, int cols)
 {
 	int i;
 

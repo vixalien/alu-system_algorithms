@@ -1,11 +1,13 @@
 #include "graphs.h"
 
 /* Internal helper function declarations */
-static vertex_t *locate_vertex_by_index(const graph_t *graph, size_t target_idx);
+static vertex_t *locate_vertex_by_index(const graph_t *graph,
+					size_t target_idx);
 static queue_t *initialize_bfs_queue(void);
 static void enqueue_vertex(queue_t *queue, int vertex_index);
 static int dequeue_vertex(queue_t *queue, int peek_only);
-static void cleanup_bfs_resources(queue_t *queue, size_t *visited_tracker);
+static void cleanup_bfs_resources(queue_t *queue,
+				  size_t *visited_tracker);
 
 /**
  * initialize_bfs_queue - Creates and initializes a new queue for BFS
@@ -82,7 +84,8 @@ static int dequeue_vertex(queue_t *queue, int peek_only)
  * Description: Linear search through vertex list for matching index
  * Return: Pointer to matching vertex, NULL if not found
  */
-static vertex_t *locate_vertex_by_index(const graph_t *graph, size_t target_idx)
+static vertex_t *locate_vertex_by_index(const graph_t *graph,
+					size_t target_idx)
 {
 	vertex_t *current_vertex;
 
@@ -107,7 +110,8 @@ static vertex_t *locate_vertex_by_index(const graph_t *graph, size_t target_idx)
  *
  * Return: void
  */
-static void cleanup_bfs_resources(queue_t *queue, size_t *visited_tracker)
+static void cleanup_bfs_resources(queue_t *queue,
+				  size_t *visited_tracker)
 {
 	if (queue)
 		free(queue);
@@ -171,7 +175,8 @@ size_t breadth_first_traverse(const graph_t *graph,
 
 		/* Process current vertex */
 		current_vertex = locate_vertex_by_index(graph, current_index);
-		if (!current_vertex || visited_tracker[current_vertex->index] == EXPLORED)
+		if (!current_vertex ||
+		    visited_tracker[current_vertex->index] == EXPLORED)
 			continue;
 
 		/* Mark as visited and execute action */
