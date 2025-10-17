@@ -63,7 +63,7 @@ static vertex_t *find_minimum_distance_vertex(graph_t *graph,
 			return (current_vertex);
 		current_vertex = current_vertex->next;
 	}
-	
+
 	return (NULL);
 }
 
@@ -102,7 +102,7 @@ static void reconstruct_shortest_path(graph_t *graph, queue_t *result_queue,
 			queue_delete(result_queue);
 			return;
 		}
-		
+
 		current_idx = predecessor_map[current_idx]->index;
 		if (current_idx == source->index)
 			return;

@@ -144,7 +144,7 @@ size_t breadth_first_traverse(const graph_t *graph,
 	/* Initialize data structures */
 	visited_tracker = calloc(graph->nb_vertices, sizeof(size_t));
 	bfs_queue = initialize_bfs_queue();
-	
+
 	if (!visited_tracker || !bfs_queue)
 	{
 		cleanup_bfs_resources(bfs_queue, visited_tracker);
@@ -166,7 +166,7 @@ size_t breadth_first_traverse(const graph_t *graph,
 		{
 			current_breadth++;
 			enqueue_vertex(bfs_queue, LEVELBREAK);
-			
+
 			/* Check if queue only contains level breaks */
 			if (dequeue_vertex(bfs_queue, 1) == LEVELBREAK)
 				break;
