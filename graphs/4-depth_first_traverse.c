@@ -1,130 +1,85 @@
 #include "graphs.h"
 
-/* Internal helper function declarations */
-static vertex_t *find_vertex_at_index(const graph_t *graph,
-				      size_t target_index);
-static void perform_dfs_recursion(size_t vertex_id, size_t *visit_tracker,
-				  size_t current_level, size_t *max_level,
-				  const graph_t *graph,
-				  void (*action)(const vertex_t *v, size_t depth));
-
 /**
- * find_vertex_at_index - Locates a vertex by its index within the graph
- * @graph: Pointer to the graph structure
- * @target_index: Index value to search for
- *
- * Description: Traverses the vertex list to find a vertex with the
- *              specified index value
- * Return: Pointer to matching vertex, NULL if not found or invalid input
+ * traverseVerticesRecursively - recursive function that travels through
+ * vertices in a graph
+ * @vertex: the starting vertex to traverse from
+ * @visited_flags: an array indicating whether vertices have been visited
+ * @current_depth: the current depth level in traversal
+ * @vertex_action: a function to perform an action on each vertex
+ * Return: the maximum depth reached during traversal
  */
-static vertex_t *find_vertex_at_index(const graph_t *graph,
-				      size_t target_index)
+
+size_t traverseVerticesRecursively(vertex_t *vertex, char *visited_flags,
+				   size_t current_depth, void (*vertex_action)
+				   (const vertex_t *v, size_t depth))
 {
-	vertex_t *current_node;
+	size_t current_depth_new = 0, max_depth = current_depth, flag = 0;
+	edge_t *edge_header = NULL;
 
-	if (!graph || target_index >= graph->nb_vertices)
-		return (NULL);
+	if (!vertex)
+		return (current_depth - 1);
 
-	current_node = graph->vertices;
-	while (current_node)
+	edge_header = vertex->edges;
+
+	while (edge_header)
 	{
-		if (current_node->index == target_index)
-			return (current_node);
-		current_node = current_node->next;
-	}
-
-	return (NULL);
-}
-
-/**
- * perform_dfs_recursion - Recursive helper for depth-first traversal
- * @vertex_id: Current vertex index being processed
- * @visit_tracker: Array tracking visited status of all vertices
- * @current_level: Current depth level in the traversal
- * @max_level: Pointer to maximum depth reached so far
- * @graph: Graph structure being traversed
- * @action: Function to call for each visited vertex
- *
- * Description: Implements the core DFS algorithm recursively, marking
- *              vertices as visited and exploring their neighbors
- * Return: void
- */
-static void perform_dfs_recursion(size_t vertex_id, size_t *visit_tracker,
-				  size_t current_level, size_t *max_level,
-				  const graph_t *graph,
-				  void (*action)(const vertex_t *v, size_t depth))
-{
-	vertex_t *current_vertex, *neighbor_vertex;
-	edge_t *current_edge;
-
-	current_vertex = find_vertex_at_index(graph, vertex_id);
-
-	/* Process vertex if valid and unvisited */
-	if (current_vertex && visit_tracker[vertex_id] == UNEXPLORED)
-	{
-		/* Execute action function on current vertex */
-		action(current_vertex, current_level);
-
-		/* Update maximum depth if current level exceeds it */
-		if (current_level > *max_level)
-			*max_level = current_level;
-
-		/* Mark current vertex as explored */
-		visit_tracker[vertex_id] = EXPLORED;
-
-		/* Explore all adjacent vertices */
-		current_edge = current_vertex->edges;
-		while (current_edge)
+		if (visited_flags[edge_header->dest->index] == 0)
 		{
-			neighbor_vertex = current_edge->dest;
+			vertex_action(edge_header->dest, current_depth);
+			visited_flags[edge_header->dest->index] = 1;
+			current_depth_new = traverseVerticesRecursively
+				(edge_header->dest, visited_flags,
+				 current_depth + 1, vertex_action);
 
-			/* Recursively visit unexplored neighbors */
-			if (visit_tracker[neighbor_vertex->index] == UNEXPLORED)
-			{
-				perform_dfs_recursion(neighbor_vertex->index, visit_tracker,
-						      current_level + 1, max_level,
-						      graph, action);
-			}
-			current_edge = current_edge->next;
+			if (current_depth_new > max_depth)
+				max_depth = current_depth_new;
+			flag = 1;
 		}
+		edge_header = edge_header->next;
 	}
+	if (flag)
+		return (max_depth);
+
+	return (max_depth - 1);
 }
 
+
+
 /**
- * depth_first_traverse - Performs depth-first traversal of entire graph
- * @graph: Graph structure to traverse
- * @action: Callback function executed for each visited vertex
- *
- * Description: Initiates DFS traversal from the first vertex, ensuring
- *              all connected components are visited. Tracks maximum depth.
- * Return: Maximum depth reached during traversal, 0 on failure
+ * depth_first_traverse - program that traverses a graph using
+ * depth-first search
+ * @graph: the graph to traverse
+ * @action: a function to perform an action on each vertex along with its depth
+ * Return: the maximum depth reached during traversal
  */
+
 size_t depth_first_traverse(const graph_t *graph,
 			    void (*action)(const vertex_t *v, size_t depth))
 {
-	size_t maximum_depth = 0;
-	size_t *visited_array;
-	vertex_t *start_vertex;
+	vertex_t *current_vertex = NULL;
+	char visited_flags[2048] = {0};
+	size_t current_depth = 0, max_depth = 0;
 
-	/* Validate input parameters */
 	if (!graph || !action)
 		return (0);
 
-	/* Allocate tracking array for visited vertices */
-	visited_array = calloc(graph->nb_vertices, sizeof(size_t));
-	if (!visited_array)
-		return (0);
+	current_vertex = graph->vertices;
 
-	/* Begin traversal from first vertex if it exists */
-	start_vertex = graph->vertices;
-	if (start_vertex && visited_array[start_vertex->index] == UNEXPLORED)
+	while (current_vertex)
 	{
-		perform_dfs_recursion(start_vertex->index, visited_array, 0,
-				      &maximum_depth, graph, action);
+		if (visited_flags[current_vertex->index] == 0)
+		{
+			action(current_vertex, 0);
+			visited_flags[current_vertex->index] = 1;
+			current_depth = traverseVerticesRecursively
+				(current_vertex, visited_flags, 1, action);
+
+			if (current_depth > max_depth)
+				max_depth = current_depth;
+		}
+		current_vertex = current_vertex->next;
+		break;
 	}
-
-	/* Clean up allocated memory */
-	free(visited_array);
-
-	return (maximum_depth);
+	return (max_depth);
 }

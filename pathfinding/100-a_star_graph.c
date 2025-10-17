@@ -1,14 +1,14 @@
 #include "pathfinding.h"
 
 /**
- * get_min_g_score - Finds the vertex with the lowest g_score from the source.
+ * get_min_g_score - finds the vertex with lowest g_score from source
  *
- * @graph: Pointer to the graph.
- * @g_score: Array of g_scores from the start vertex.
- * @visited: Array indicating if a vertex has been visited.
- * @index: Current index.
+ * @graph: pointer to graph
+ * @g_score: array of g_scores from start vertex
+ * @visited: array of if vertex has been visited
+ * @index: current index
  *
- * Return: Pointer to the vertex with the minimum g_score or NULL if not found.
+ * Return: index with minimum g_score or NULL
  */
 vertex_t *get_min_g_score(graph_t *graph, size_t *g_score, size_t *visited,
 		size_t *index)
@@ -45,13 +45,13 @@ vertex_t *get_min_g_score(graph_t *graph, size_t *g_score, size_t *visited,
 
 
 /**
- * reconstruct_path - Constructs the path by inserting vertices into a queue.
+ * reconstruct_path - inserts vertices into queue
  *
- * @graph: Pointer to the graph containing vertices.
- * @path: Pointer to the queue to store the path.
- * @came_from: Array indicating the previous vertex for each vertex.
- * @start: Pointer to the starting vertex.
- * @target: Pointer to the target vertex.
+ * @graph: pointer to graph with vertices
+ * @path: pointer to path array
+ * @came_from: pointer to came_from node
+ * @start: start vertex
+ * @target: target vertex
  *
  * Return: void
  */
@@ -63,11 +63,10 @@ void reconstruct_path(graph_t *graph, queue_t *path, vertex_t **came_from,
 	if (!came_from[i])
 		return;
 
-	/* Insert target node content into the queue */
+	/* Push into queue starting at end (target node) */
 	if (!queue_push_front(path, strdup(target->content)))
 		queue_delete(path);
 
-	/* Traverse backwards from target to start */
 	while (came_from[i] && i < graph->nb_vertices)
 	{
 		if (!queue_push_front(path, strdup(came_from[i]->content)))
@@ -80,18 +79,18 @@ void reconstruct_path(graph_t *graph, queue_t *path, vertex_t **came_from,
 
 
 /**
- * recursive_a_star - Recursively finds the shortest
- * path using the A* algorithm.
- * @graph: Pointer to the graph.
- * @g_score: Array of g_scores from the start vertex.
- * @visited: Array indicating if a vertex has been visited.
- * @came_from: Array indicating the previous vertex for each vertex.
- * @start: Pointer to the starting vertex.
- * @target: Pointer to the target vertex.
- * @f_score: Array of g_scores plus the heuristic distance to the target.
- * @idx: Current index.
+ * recursive_a_star - recursive utility to find shortest path using A-star
  *
- * Return: void
+ * @graph: pointer to graph to go through
+ * @g_score: array of g_scores from start vertex
+ * @visited: keeps track of which vertices have been visited
+ * @came_from: keeps track of came_from nodes for each vertex
+ * @start: pointer to starting vertex
+ * @target: pointer to target vertex
+ * @f_score: array of distance from start + euclidean to target
+ * @idx: pointer to current index
+ *
+ * Return: queue of shortest path or NULL
  */
 void recursive_a_star(graph_t *graph, size_t *visited, vertex_t **came_from,
 	vertex_t const *start, vertex_t const *target,
@@ -133,19 +132,17 @@ void recursive_a_star(graph_t *graph, size_t *visited, vertex_t **came_from,
 
 
 /**
- * initialize_a_star - Initializes arrays for A* search.
+ * initialize_a_star - initializes all the arrays for A* search
  *
- * @graph: Pointer to the graph.
- * @visited: Pointer to an array indicating if a vertex has been visited.
- * @came_from: Pointer to an array indicating
- * the previous vertex for each vertex.
- * @f_score: Pointer to an array of g_scores plus the heuristic
- * distance to the target.
- * @g_score: Pointer to an array of g_scores from the start vertex.
- * @start: Pointer to the starting vertex.
- * @target: Pointer to the target vertex.
+ * @graph: graph that we are examining
+ * @visited: has this vertex been visited?
+ * @came_from: array of parents of visited nodes
+ * @f_score: array of g_score + h(current, target)
+ * @g_score: distance from start to current
+ * @start: starting vertex
+ * @target: target vertex
  *
- * Return: 1 on success, -1 on failure.
+ * Return: 1 on success, -1 on failure
  */
 int initialize_a_star(graph_t *graph, size_t **visited, vertex_t ***came_from,
 	size_t **f_score, size_t **g_score,
@@ -186,15 +183,16 @@ int initialize_a_star(graph_t *graph, size_t **visited, vertex_t ***came_from,
 }
 
 /**
- * a_star_graph - Performs A* search for the shortest
- * path from start to target in a graph.
- * @graph: Pointer to the graph.
- * @start: Pointer to the starting vertex.
- * @target: Pointer to the target vertex.
+ * a_star_graph - searches for the shortest path from a starting point to a
+ *	target point in a graph using A* algorithm using Euclidean g_score as
+ *  the heuristic
  *
- * Return: Queue containing the shortest path
- * from start to target as a sequence of vertex contents,
- * or NULL if no path is found.
+ * @graph: pointer to graph to go through
+ * @start: pointer to starting vertex
+ * @target: pointer to target vertex
+ *
+ * Return: queue in which each node is a char * corresponding to a vertex
+ *	forming a path from start to target
  */
 queue_t *a_star_graph(graph_t *graph, vertex_t const *start,
 					vertex_t const *target)

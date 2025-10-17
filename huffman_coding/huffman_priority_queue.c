@@ -1,47 +1,51 @@
 #include "huffman.h"
 
 /**
- * symbol_frequency_compare - compares the frequencies
+ * compare_frequencies - program that compares the frequencies
  * of two symbol nodes
+ * the purpose of this comparison is to determine the order in which symbols
+ * should be arranged or sorted based on their frequencies
  * @p1: a pointer to the first symbol node
  * @p2: a pointer to the second symbol node
  * Return: the difference between the frequencies of the symbols
  */
-int symbol_frequency_compare(void *p1, void *p2)
+
+int compare_frequencies(void *p1, void *p2)
 {
-	binary_tree_node_t *first_node, *second_node;
-	symbol_t *first_symbol, *second_symbol;
+	binary_tree_node_t *node1, *node2;
+	symbol_t *symbol1, *symbol2;
 
-	first_node = (binary_tree_node_t *)p1;
-	second_node = (binary_tree_node_t *)p2;
-	first_symbol = (symbol_t *)first_node->data;
-	second_symbol = (symbol_t *)second_node->data;
+	node1 = (binary_tree_node_t *)p1;
+	node2 = (binary_tree_node_t *)p2;
+	symbol1 = (symbol_t *)node1->data;
+	symbol2 = (symbol_t *)node2->data;
 
-	return (first_symbol->freq - second_symbol->freq);
+	return (symbol1->freq - symbol2->freq);
 }
 
 /**
- * huffman_priority_queue - creates a min-heap priority queue
+ * huffman_priority_queue - program that creates a min-heap priority queue
  * of symbols
  * @data: an array of characters
  * @freq: an array of frequencies associated with characters
  * @size: the size of the arrays
  * Return: a min-heapified version of the arrays
  */
+
 heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 {
-	heap_t *min_heap;
-	symbol_t *new_symbol;
-	binary_tree_node_t *tree_node;
-	size_t idx;
+	heap_t *heap;
+	symbol_t *symbol;
+	binary_tree_node_t *node;
+	size_t i;
 
-	min_heap = heap_create(symbol_frequency_compare);
+	heap = heap_create(compare_frequencies);
 
-	for (idx = 0; idx < size; idx++)
+	for (i = 0; i < size; i++)
 	{
-		new_symbol = symbol_create(data[idx], freq[idx]);
-		tree_node = binary_tree_node(NULL, new_symbol);
-		tree_node = heap_insert(min_heap, tree_node);
+		symbol = symbol_create(data[i], freq[i]);
+		node = binary_tree_node(NULL, symbol);
+		node = heap_insert(heap, node);
 	}
-	return (min_heap);
+	return (heap);
 }
